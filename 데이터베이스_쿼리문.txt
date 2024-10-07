@@ -1,0 +1,183 @@
+/* 회원 */
+drop table if exists member_info;
+create table member_info(
+	member_num VARCHAR(30) comment '회원번호',
+	member_id VARCHAR(15) NOT NULL UNIQUE comment '사용자ID',
+	member_pw VARCHAR(200) NOT NULL comment '사용자패스워드',
+	member_name VARCHAR(15) NOT NULL comment '사용자이름',
+	member_phone VARCHAR(13) NOT NULL comment '전화번호',
+	member_addr VARCHAR(200) NOT NULL comment '주소',
+	member_addr_detail VARCHAR(30) comment '상세주소',
+	member_post VARCHAR(6) NOT NULL comment '우편번호',
+	member_regist DATE NOT NULL comment '(회원/직원)',
+	member_birth DATE NOT NULL comment '생년월일',
+	member_email VARCHAR(100) NOT NULL UNIQUE comment '이메일',
+	member_email_conf CHAR(1) comment '이메일확인',
+	member_point int comment '포인트',
+	 primary key(member_Num)
+);
+ALTER TABLE member_info CHANGE member_regist member_regist_date DATE NOT NULL;
+
+select * from member_info;
+
+ 
+/* 직원 */
+drop table if exists emp_info;
+create table emp_info(
+	emp_num 	varchar(30) comment '직원번호',
+	emp_id  	VARCHAR(10) NOT NULL UNIQUE comment '직원ID',
+	emp_pw  	VARCHAR(200) NOT NULL comment '직원패스워드',
+	emp_name  	VARCHAR(50)  NOT NULL comment '직원이름',
+	emp_addr  	VARCHAR(200) NOT NULL comment '주소',
+	emp_addr_detail	VARCHAR(30) comment '상세주소',
+	emp_post	VARCHAR(6) NOT NULL comment '우편번호',
+	emp_phone   VARCHAR(13)  NOT NULL comment '전화번호',
+	emp_jumin 	varchar(14) NOT NULL UNIQUE comment '주민번호',
+	emp_email   VARCHAR(200) NOT NULL UNIQUE comment '이메일',
+	emp_enter_date Date NOT NULL comment '입사일',
+	 primary key(emp_num)
+);
+
+drop table if exists goods_info;
+create table goods_info(
+	goods_num VARCHAR(10),
+	goods_name VARCHAR(100) not null ,
+	goods_price integer not null,
+	goods_content VARCHAR(2000) not null,
+	goods_main_store VARCHAR(500)not null,
+	goods_main_store_img VARCHAR(500)not null,
+	goods_images VARCHAR(500) ,
+	goods_images_img VARCHAR(500) ,
+	delivery_cost integer default 0,
+	visit_count integer default 0,
+	emp_num varchar(30) ,
+	goods_regist date not null,
+	update_emp_num varchar(30),
+	goods_update_date date,
+	primary key(goods_num)
+);
+
+/* 상품입고 */
+drop table if exists goodsIpgo_info;
+create table goodsIpgo_info(
+	ipgo_num varchar(30),
+	goods_num VARCHAR(10) not null,
+	ipgo_qty integer not null,
+	made_date date not null,
+	ipgo_price integer not null,
+	ipgo_date date not null,
+	emp_num varchar(30),
+	 PRIMARY KEY (ipgo_num, goods_num)
+);
+
+
+/* 관심상품 */
+CREATE TABLE wish_info (
+	goods_num VARCHAR(10) ,
+	member_Num VARCHAR(30),
+	wish_date DATE not null,
+	primary key(goods_num, member_num)
+);
+
+select * from wish_info;
+/* 장바구니 */
+drop table if exists cart_info;
+CREATE TABLE cart_info (
+	cart_num serial,
+	goods_num VARCHAR(10) ,
+	member_Num VARCHAR(30),
+	cart_date date not null,
+	cart_qty integer not null,
+	primary key(goods_num, member_num)
+);
+
+/* 구매 */
+drop table if exists purchase_info;
+CREATE TABLE purchase_info (
+	purchase_num VARCHAR(30),
+	purchase_date DATE not null,
+	purchase_price integer not null,
+	delivery_addr varchar(200),
+	delivery_addr_detail varchar(30),
+	delivery_post varchar(6),
+	delivery_phone VARCHAR(13),
+	message VARCHAR(200),
+	purchase_status VARCHAR(20),
+	member_Num VARCHAR(30),
+	primary key(purchase_num)
+);
+
+
+alter table purchase_info 
+add column delivery_name varchar(200);
+
+/* 구매리스트 */
+drop table if exists purchase_list;
+CREATE TABLE purchase_list (
+	purchase_num VARCHAR(30),
+	goods_num varchar(10),
+	purchase_qty integer not null,
+	total_price integer not null,
+	primary key(purchase_num, goods_num)
+);
+
+
+/* 배송 */
+drop table if exists delivery_info;deliveryMapper
+CREATE TABLE delivery_info (
+	purchase_num VARCHAR(30),
+	delivery_num  VARCHAR(20) UNIQUE,
+	delivery_date date,
+  DELIVERY_STATE varchar(20),
+  primary key(purchase_num)
+);
+alter table delivery_info 
+add column delivery_company varchar(50);
+
+/* 결제 */
+drop table if exists payment_info;
+create table payment_info(
+	purchase_Num varchar(30),
+	confirmNumber varchar(50),
+	cardNum varchar(50),  /* 카드번호*/
+	tid varchar(50), /* 거래번호*/
+	totalPrice varchar(50), /* 결제 금액*/
+	resultMessage varchar(50), /* 결과 메세지*/
+	payMethod varchar(50), /* 결제 방법*/
+	applDate varchar(50),/* 승인날짜*/
+	applTime varchar(50), /* 승인시간*/
+	purchaseName varchar(50),
+	primary key(purchase_Num)
+);
+
+/* 후기 */
+drop table if exists review_info;
+CREATE TABLE review_info (
+	purchase_num VARCHAR(30),
+	goods_num VARCHAR(10),
+	review_date DATE,
+	score integer,
+	review_content varchar(2000),
+	member_Id VARCHAR(15),
+	primary key(purchase_num,goods_num)
+);
+alter table review_info 
+add column review_num serial;
+
+/* 상품 문의 */
+drop table if exists goods_inquire;
+CREATE TABLE goods_inquire (
+	inquire_num serial,
+	goods_num VARCHAR(10) ,
+	member_Num varchar(30),
+	inquire_subject VARCHAR(100) not null,
+	inquire_content VARCHAR(2000) not null,
+	inquire_kind VARCHAR(20) not null,
+	inquire_date date not null,
+	inquire_answer VARCHAR(2000) ,
+	inquire_answer_date date,
+	emp_num varchar(30) ,
+	primary key(inquire_num,goods_num,member_num)
+);
+  
+     
