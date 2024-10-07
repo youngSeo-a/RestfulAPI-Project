@@ -1,0 +1,83 @@
+drop table if exists user_info;
+CREATE TABLE user_info (
+  user_id varchar(100) NOT NULL COMMENT '사용자ID',
+  user_name varchar(50) NOT NULL COMMENT '사용자이름',
+  user_passwd varchar(200) NOT NULL COMMENT '사용자패스워드',
+  user_birth int(11) NOT NULL COMMENT '사용자생년월일',
+  user_gender char(1) NOT NULL COMMENT '성별(남/여)',}
+  user_email varchar(100) DEFAULT '' COMMENT '이메일',
+  user_phone varchar(50) NOT NULL COMMENT '전화번호',
+  user_addr varchar(100) NOT NULL COMMENT '주소',
+  user_addr_detail varchar(100) DEFAULT '' COMMENT '상세주소',
+  user_role  varchar(100) not null comment '사용자 권한' ,
+  PRIMARY KEY (user_id)
+);
+
+insert into user_info(user_id, user_name, user_passwd, user_birth,
+                      user_gender, user_email, user_phone, user_addr, 
+                      user_addr_detail, user_role )
+values('admin','관리자',
+       '$2a$10$nhPQ8gzWFC2Bc7sujKp.0uvNc9Dq5HV3Zpv/w.wLH3ZOZapoA4REW', 
+       901012,'남','admin@naver.com', 
+       '010-1111-2222','서울시 서대문구 신촌동', '꿈마을 101동 101호', 'ADMIN'); 
+       
+   
+create table tb_role(
+	role_id varchar(100) not null comment '권한ID',
+	role_name varchar(50) not null comment '권한이름',
+	discription varchar(100) DEFAULT '' comment '설명',
+	PRIMARY KEY (role_id)
+);
+
+insert into tb_role(role_id,role_name,discription)
+values('ADMIN','관리자','슈퍼유저'),('USER','사용자','일반유저');
+
+select user_id,
+user_name ,
+user_birth ,
+user_passwd ,
+user_role,
+ro.role_name
+from user_info u 
+	inner join tb_role ro on u.user_role = ro.role_id
+where user_id = 'admin';
+
+drop table if exists notice_board;
+CREATE TABLE notice_board (
+  board_id int(11) NOT NULL AUTO_INCREMENT COMMENT '글번호',
+  board_title varchar(100) NOT NULL COMMENT '글제목',
+  board_contents text NOT NULL COMMENT '글내용',
+  board_writer varchar(50) NOT NULL COMMENT '글쓴이',
+  board_count int(11) DEFAULT 0 COMMENT '조회수',
+  reg_date datetime DEFAULT current_timestamp(),
+  update_date datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (board_id)
+);
+
+drop table if exists tb_gallery;
+
+create table tb_gallery(
+	gall_id 		int auto_increment not null comment '번호',
+	gall_title 		varchar(100) not null comment '글제목',
+	gall_writer 	varchar(50) not null comment '글쓴이',
+	gall_count		int default 0 comment '조회수',
+	reg_date 		datetime default now() comment '생성일',
+	update_date 	datetime default now() comment '수정일',
+	primary key(gall_id)
+);
+
+
+drop table if exists tb_file_info;
+
+create table tb_file_info(
+file_id 		int auto_increment not null comment '파일번호',
+parent_id 		int 			   not null comment '게시글번호',
+file_origin_name varchar(100) not null comment '원본파일이름',
+file_stored_name varchar(100) not null comment '저장이름',
+file_thumb_name varchar(100) not null comment '썸네일파일이름',
+file_path 		varchar(200) not null comment '파일경로',
+file_thumb_path varchar(200) not null comment '썸네일경로',
+file_type 		char(1) not null comment '게시판:B, 갤러리:G',
+primary key(file_id)
+
+);
