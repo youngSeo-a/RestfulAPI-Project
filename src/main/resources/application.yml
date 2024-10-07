@@ -1,0 +1,75 @@
+server:
+  port : 9090
+  stored:
+    file:
+      path : D:\\web_sutdy_sdy\\gallery\\files\\
+spring:
+  main:
+    allow-bean-definition-overriding: true
+
+  datasource:
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:mariadb://localhost:13306/spring
+    username: root
+    password: 1234
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 50
+      minimum-idle: 20
+      idle-timeout: 10000
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+    jpa:
+      database-platform: org.hibernate.dialect.MariaDB103Dialect
+      database: mysql
+      generate-ddl: false
+      open-in-view: false
+      show-sql: true
+      hibernate:
+        ddl-auto: none
+      properties:
+        hibernate:
+          generate_statistics: false
+          format_sql: false
+          use_sql_comments: false
+          cache:
+            use_second_level_cache: false
+            use_query_cache: false
+            region:
+              factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+
+  thymeleaf:
+    cache: false
+    check-template-location: true
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+    prefix: classpath:/templates/
+    suffix: .html
+
+  devtools:
+    livereload:
+      enabled: true
+    remote:
+      restart:
+        enabled: true
+    restart:
+      enabled: true
+
+#mybatis 설정
+mybatis:
+  config-location: classpath:config/mybatis-config.xml
+  mapper-locations: classpath:mapper/**/*.xml
+
+#불필요 로그 끈다
+logging:
+  level:
+    org:
+      springframework:
+        boot:
+          autoconfigure: OFF
+      thymeleaf: OFF

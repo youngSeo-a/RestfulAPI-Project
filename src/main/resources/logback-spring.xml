@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+      <property name="LOG_FILE_PATH"  value="./logs" />
+      
+      <!-- 콘솔 출력 패턴 저장 -->
+      <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+          <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+          </encoder>
+      </appender>
+
+     <appender name="FILE"    class="ch.qos.logback.core.rolling.RollingFileAppender">
+	      <!--  로그를 찍을 등급 표기  -->
+	      <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+	            <level>INFO</level>
+	        </filter>
+	       <prudent>false</prudent>
+	       <file>${LOG_FILE_PATH}/boot_web.log</file>
+	      <encoder>
+	            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
+	        </encoder>
+	        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	            <fileNamePattern>${LOG_FILE_PATH}/boot_web.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+	            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+	             <maxFileSize>100MB</maxFileSize>
+	            </timeBasedFileNamingAndTriggeringPolicy>
+	            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+     </appender>
+     
+     <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+         <file>${LOG_FILE_PATH}/boot_web_error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/myweb_error-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}[%-5level] : %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!--  config 설정  -->
+    <logger name="org.apache.http" level="OFF"   additivity="false" />
+    
+     <logger name="jdbc" level="OFF"/>
+     
+    <logger name="jdbc.sqlonly" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="jdbc.sqltiming" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="jdbc.resultsettable" level="OFF" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+ <root  level="INFO">
+       <appender-ref ref="STDOUT" />
+        <appender-ref ref="ERROR" />
+        <appender-ref ref="FILE" />
+ </root>
+
+
+
+
+
+
+
+
+
+
+
+</configuration>

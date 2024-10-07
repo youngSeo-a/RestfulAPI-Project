@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias type="my.web.code.dto.Gallery$RequestDTO" alias="requestDTO"/>
+        <typeAlias type="my.web.code.dto.Gallery$GalleryVO" alias="galleryVO"/>
+        <typeAlias type="my.web.code.dto.FileDTO" alias="fileDTO"/>
+        <typeAlias type="my.web.code.dto.UserVO" alias="UserVO"/>
+
+        <typeAlias type="my.web.code.dto.Notice$Response" alias="notice"/>
+        <typeAlias type="my.web.code.dto.Notice$Update" alias="updateVO"/>
+        <typeAlias type="my.web.code.dto.Notice$Request" alias="requestVO"/>
+
+        <typeAlias type="java.util.Map" alias="map"/>
+
+    </typeAliases>
+
+</configuration>

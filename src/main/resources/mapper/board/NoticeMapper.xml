@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="my.web.code.mapper.board.NoticeMapper">
+
+   <select id="getBoardTotalCount"  resultType="int">
+   
+      select count(*) as cnt
+      from notice_board
+   
+   </select>
+
+  <select id="getBoardList"  parameterType="map" resultType="notice">
+  
+  		select board_id,
+			   board_title,
+		       board_contents,
+		       board_writer,
+		       board_count,
+		       date_format(reg_date, '%Y-%m-%d') as reg_date,
+		       date_format(update_date, '%Y-%m-%d') as update_date
+		from notice_board
+		order by board_id desc
+		limit #{start}, #{end}
+  
+  </select>
+  
+  
+  <select id="getBoard"  parameterType="map" resultType="notice">
+	  select board_id,
+			 board_title,
+			 board_contents,
+			 board_writer,
+			 board_count,
+			 ifnull(file_id,0) as file_id,
+			 ifnull(file_origin_name,'') as file_origin_name,
+			 date_format(reg_date, '%Y-%m-%d') as reg_date,
+			 date_format(update_date, '%Y-%m-%d') as update_date
+	  from notice_board notice
+			   left join tb_file_info file
+						 on notice.board_id = file.parent_id and file.file_type ='B'
+	  where board_id = #{boardId}
+  </select>
+
+  <!-- 1(성공한 개수), 0, -1 -->
+  <update id="updateBoardCount" parameterType="map">
+  	  update notice_board
+  	  set board_count = board_count + 1
+  	  where board_id = #{boardId}
+  </update>
+  
+  <update id="updateNotice"  parameterType="updateVO" >
+  		
+  		update notice_board
+  		set board_title = #{boardTitle},
+  		    board_contents = #{boardContents},
+  		    update_date = now()
+  		where board_id = #{boardId}
+  		
+  </update>
+  <insert id="createNotice" parameterType="requestVO" useGeneratedKeys="true" keyProperty="boardId">
+  
+    insert into notice_board(board_title, board_contents, board_writer)
+       values(#{boardTitle}, #{boardContents}, #{boardWriter} )
+  
+  </insert>
+  
+  
+  <delete id="deleteNotice" parameterType="map">
+  	  delete from notice_board
+  	  where board_id = #{boardId}
+  </delete>
+
+	<insert id="insertFile" parameterType="fileDTO">
+		insert into tb_file_info(parent_id, file_origin_name, file_stored_name,
+								 file_thumb_name, file_path, file_thumb_path, file_type)
+		values( #{parentId}, #{fileOriginName}, #{fileStoredName}, #{fileThumbName},
+				#{filePath}, #{fileThumbPath},  #{fileType})
+	</insert>
+
+	<select id="getFileInfo" parameterType="java.util.Map" resultType="fileDTO">
+		select file_id,
+			   file_path,
+			   file_origin_name,
+		       file_stored_name
+		from tb_file_info
+		where parent_id = #{boardId}
+			and file_type = #{fileType}
+	</select>
+
+	<delete id="deleteBoardFile" parameterType="java.util.Map">
+		delete from tb_file_info where parent_id = #{boardId} and file_type='B'
+	</delete>
+</mapper>

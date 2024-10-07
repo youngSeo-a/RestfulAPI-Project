@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="my.web.code.mapper.gallery.GalleryMapper">
+
+    <resultMap id="galleryMap" type="my.web.code.dto.Gallery$GalleryVO">
+        <id property="gallId" column="gall_id" /><!-- gallId 빼고 다 result로 써야함 왜??-->
+        <result property="gallTitle" column="gall_title" /><!-- property는 멤버변수-->
+        <result property="gallWriter" column="gall_writer" />
+        <result property="gallCount" column="gall_count" />
+        <result property="updateDate" column="update_date" />
+        <!--has one>>> vo가 하나의 객체를 멤버로 가지고 있을 경우 -->
+        <!--has many>>> vo가 List 객체를 멤버로 가지고 있을 경우 -->
+        <association property="file" javaType="my.web.code.dto.FileDTO"><!-- association : 1:1 관계의 테이블을 조인할 때 사용 (조인 객체)-->
+            <id property="fileId" column="file_id" />
+            <result property="parentId" column="parent_id"/>
+            <result property="fileOriginName" column="file_origin_name"/>
+            <result property="fileStoredName" column="file_stored_name"/>
+            <result property="fileThumbName" column="file_thumb_name"/>
+            <result property="filePath" column="file_path"/>
+            <result property="fileThumbPath" column="file_thumb_path"/>
+        </association>
+    </resultMap>
+
+    <insert id="insertGallery" parameterType="requestDTO"
+            useGeneratedKeys="true" keyProperty="gallId">
+
+        insert into tb_gallery(gall_title, gall_writer)
+        values(#{gallTitle}, #{gallWriter})
+    </insert>
+
+    <insert id="insertFile" parameterType="fileDTO">
+        insert into tb_file_info(parent_id, file_origin_name, file_stored_name,
+        file_thumb_name, file_path, file_thumb_path, file_type)
+        values( #{parentId}, #{fileOriginName}, #{fileStoredName}, #{fileThumbName},
+        #{filePath}, #{fileThumbPath},  #{fileType})
+    </insert>
+
+    <select id="getGalleryListTotal"  resultType="int">
+        select count(*) cnt
+            from tb_gallery gl
+            inner join tb_file_info f on gl.gall_id = f.parent_id
+        where f.file_type='G'
+    </select>
+
+    <select id="getGalleryList" parameterType="java.util.Map" resultMap="galleryMap">
+        select gall_id,
+            gall_title,
+            gall_writer,
+            gall_count,
+            date_format(update_date,'%Y-%m-%d %H:%i %s') as update_date,
+            file_id,
+            file_origin_name ,
+            file_stored_name ,
+            file_path ,
+            file_thumb_name ,
+            file_thumb_path
+        from tb_gallery gl
+            inner join tb_file_info f on gl.gall_id = f.parent_id
+        where f.file_type='G'
+        order by gall_id desc
+        limit #{start}, #{end}
+    </select>
+
+    <select id="getGalleryInfo" parameterType="java.util.Map" resultMap="galleryMap">
+        select gall_id,
+        gall_title,
+        gall_writer,
+        gall_count,
+        date_format(update_date,'%Y-%m-%d %H:%i %s') as update_date,
+        file_id,
+        file_origin_name ,
+        file_stored_name ,
+        file_path ,
+        file_thumb_name ,
+        file_thumb_path
+        from tb_gallery gl
+        inner join tb_file_info f on gl.gall_id = f.parent_id
+        where f.file_type='G'
+            and gl.gall_id = #{gallId}
+    </select>
+
+<!--    이미지 지우려고 얻어오기 위한 xml-->
+    <select id="getFileInfo" parameterType="java.util.Map" resultType="fileDTO">
+        select file_id,
+               parent_id,
+               file_origin_name ,
+               file_stored_name ,
+               file_path ,
+               file_thumb_name ,
+               file_thumb_path
+        from tb_file_info
+        where file_type='G'
+        and parent_id in
+           <foreach collection="delTargetIds" item="gallId" separator="," open="(" close=")">
+                   #{gallId}
+        </foreach>
+    </select>
+
+    <update id="updateGallery" parameterType="galleryVO">
+        update tb_gallery
+        <set>
+            <if test="gallTitle neq null and gallTitle neq '' ">
+                gall_title = #{gallTitle},
+            </if>
+            <if test="gallWriter neq null and gallWriter neq '' ">
+                gall_writer = #{gallWriter},
+            </if>
+            update_date = now()
+        </set>
+        where gall_id = #{gallId}
+    </update>
+    <update id="updateFile" parameterType="FileDTO">
+        update tb_file_info
+        set file_origin_name = #{fileOriginName},
+            file_stored_name = #{fileStoredName},
+            file_path = #{filePath},
+            file_thumb_name = #{fileThumbName},
+            file_thumb_path = #{fileThumbPath}
+        where file_id = #{fileId}
+    </update>
+    <delete id="deleteGallery" parameterType="java.util.Map">
+        delete from tb_gallery where gall_id = #{gallId}
+    </delete>
+
+    <delete id="deleteGalleryFile" parameterType="java.util.Map">
+        delete from tb_file_info where parent_id = #{gallId} and file_type='G'
+    </delete>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="my.web.code.mapper.login.LoginMapper">
+
+    <select id="getLoginUser" parameterType="java.util.Map" resultType="userVo">
+        select user_id,
+        user_name ,
+        user_birth ,
+        user_passwd ,
+        user_role,
+        ro.role_name
+        from user_info u
+        inner join tb_role ro on u.user_role = ro.role_id
+        where user_id = #{userId}
+    </select>
+    </mapper>

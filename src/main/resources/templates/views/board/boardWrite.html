@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+                layout:decorate="~{layout/main_layout}">
+
+<th:block layout:fragment="css">
+	<style>
+	  .content{
+	    margin-top : 60px;
+	    height:550px;
+	  }
+	  
+	  .main{
+	     border-top: 1px solid rgb(98,98,98);
+	     margin-top : 30px;
+	     padding : 30px;
+	     border-radius: 5px;
+	  }
+	  
+	  .d-table{
+	  	 border : 1px solid;
+	  	 border-collapse: collapse;
+	  	 width: 100%;
+	  	 height: 350px;
+	  }
+	  
+	  .d-table th, td {
+	     border : 1px solid;
+	  }
+	  
+	  .d-table th {
+	   	   background-color: #eeffe1;
+	  }
+	  
+	  .tr_row{
+	     height :10%;
+	  }
+	  
+	  .btn_area{
+	     width: 100%;
+	     height : 40px;
+	     line-height: 40px;
+	     text-align : right;
+	     padding-right: 30px;
+	  }
+	  
+	  .input_txt{
+	     width: 80%;
+	     height : 40px;
+	     border-radius: 10px;
+	     margin : 5px;
+	  }
+	  
+	  .area_txt{
+	     width: 90%;
+	     height: 70%;
+	     margin-left : 15px;
+	     resize: none;
+	     padding : 15px;
+	  }
+	  
+	</style>
+</th:block>
+
+<div layout:fragment="content">
+ <div class="container">
+ 	<div class="content">
+ 	    <div style="text-align:center">
+ 	      <h3>게시글 쓰기</h3>
+ 	    </div>
+ 	    <section class="main">
+ 	       <input type="hidden" id="nowPage"  name="nowPage" th:value="${nowPage}">
+ 	       <table class="d-table">
+ 	            <colgroup>
+ 	               <col width="20%" />
+ 	               <col width="80%" />
+ 	            </colgroup>
+ 	            <tbody>
+ 	               <tr class='tr_row'>
+ 	                   <th>제목</th>
+ 	                   <td>
+ 	                     <input type="text" id="boardTitle" placeholder="제목을 입력하세요"
+ 	                            class="input_txt" name="boardTitle"  >
+ 	                   </td>
+ 	               </tr>
+				   <tr class='tr_row'>
+					   <th>첨부파일</th>
+					   <td>
+						   <input type="file" id="file"
+								  class="input_txt" name="file"  >
+					   </td>
+				   </tr>
+ 	               <tr class='row_txt'>
+ 	                   <th>글 내용</th>
+ 	                   <td>
+ 	                      <textarea id="boardContents" placeholder="내용을 입력하세요" 
+ 	                                name="boardContents" class="area_txt"></textarea>
+ 	                   </td>
+ 	               </tr>
+
+ 	            </tbody>
+ 	       </table>
+ 	    </section>
+ 	    <div class="btn_area">
+ 	        <button type="button" class="btn btn-primary"    onclick="goWrite();">등록</button>
+ 	        <button type="button" class="btn btn-secondary"  onclick="goList();">취소</button>
+ 	    </div>
+ 	</div>
+ </div>
+ <script>
+ 
+ 	function validated() {
+ 		const title = $('#boardTitle');
+ 		const contents = $('#boardContents');
+ 		
+ 		if($.trim( title.val() ).length === 0) {
+ 			alert('글 제목을 입력하십시오.');
+ 			title.focus();
+ 			return false;
+ 		}
+ 		
+ 		if($.trim( contents.val() ).length === 0) {
+ 			alert('글 내용을 입력하십시오.');
+ 			contents.focus();
+ 			return false;
+ 		}
+
+		/*const fileObj = $('#file');
+		if($.trim(fileObj.val()).length === 0) {
+			alert('업로드할 파일을 선택하십시오.');
+			return false;
+		}
+ 		*/
+ 		return true;
+ 		
+ 	}
+ 
+    function goWrite(){
+    	
+    	if( validated()) {
+    		const formData = new FormData(); // form이 없다면 이 객체를 생성하면 됨. 폼을 쉽게 보내도록 도와주는 객체
+			formData.append("boardTitle", $('#boardTitle').val());
+			formData.append("boardContents", $('#boardContents').val());
+
+			const fileObj = $('#file');
+			//파일 선택을 했을 경우만 남긴다.
+			if($.trim(fileObj.val()).length > 0) {
+			formData.append("file", fileObj[0].files[0]); //여러개 넣고 싶으면 통으로 ("file", $('#file')이것만 넣으면 됨
+			}
+/*
+    		const dataParam = {
+    				boardTitle : $('#boardTitle').val(),
+    				boardContents : $('#boardContents').val()
+    		}
+*/
+    		$.ajax({
+    			url : '/api/v1/notice',
+    			type :'POST',
+    			dataType : 'json',
+				contentType: false, //기본 타입 안씀 (xxx-formed...어쩌고 가 기본타입(GET,POST, DELETE))
+				processData: false, //querystring 금지
+				enctype :'multipart/form-data', //form 데이터전송하는데 file 도 같이 감
+    			data : formData
+    		}).done(function(response){
+    			if(response.resultCode === 200) {
+    				alert('게시글이 등록되었습니다.');
+    				document.querySelector('#nowPage').value = 0; //처음페이지 지정
+    				goList();  //리스트페이지 이동 
+    			}else {
+    				alert('게시글등록이 실패하였습니다. 관리자에게 문의하십시오.');
+    				return false;
+    			}
+
+    		}).fail(function(xhr, stats, error){
+    			console.log(error);
+    		});
+    	}
+    }
+ 
+	 function goList() {
+		const nowPage = document.querySelector('#nowPage').value;
+		location.href ="/notice/list?nowPage=" + nowPage;  
+	 }
+ 
+ 
+ </script>
+</div>
+
+</html>

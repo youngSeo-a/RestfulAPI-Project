@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/main_layout}">
+
+<th:block layout:fragment="css">
+	<style>
+		.content{
+			margin-top : 60px;
+			height:550px;
+		}
+
+		.main{
+			border-top: 1px solid rgb(98,98,98);
+			margin-top : 30px;
+			padding : 30px;
+			border-radius: 5px;
+		}
+
+		.d-table{
+			border : 1px solid;
+			border-collapse: collapse;
+			width: 100%;
+			height: 350px;
+		}
+
+		.d-table th, td {
+			border : 1px solid;
+		}
+
+		.d-table th {
+			background-color: #eeffe1;
+		}
+
+		.tr_row{
+			height :10%;
+		}
+
+		.btn_area{
+			width: 100%;
+			height : 40px;
+			line-height: 40px;
+			text-align : right;
+			padding-right: 30px;
+		}
+
+		.input_txt{
+			width: 80%;
+			height : 40px;
+			border-radius: 10px;
+			margin : 5px;
+		}
+
+		.area_txt{
+			width: 90%;
+			height: 70%;
+			margin-left : 15px;
+			resize: none;
+			padding : 15px;
+		}
+
+	</style>
+</th:block>
+
+<div layout:fragment="content">
+	<div class="container">
+		<div class="content">
+			<div style="text-align:center">
+				<h3>게시글 수정</h3>
+			</div>
+			<section class="main">
+				<form action="/notice/detail/update" method="POST" id="updateFrm" enctype="multipart/form-data">
+					<input type="hidden" id="boardId"  name="boardId" th:value="${data.boardId}">
+					<input type="hidden" id="nowPage"  name="nowPage" th:value="${nowPage}">
+					<table class="d-table">
+						<colgroup>
+							<col width="20%" />
+							<col width="80%" />
+						</colgroup>
+						<tbody>
+						<tr class='tr_row'>
+							<th>글 제목</th>
+							<td>
+								<input type="text" id="boardTitle" class="input_txt"
+									   name="boardTitle" th:value="${data.boardTitle}">
+							</td>
+						</tr>
+						<tr class='tr_row'>
+							<th>첨부파일</th>
+							<td>
+								<input type="file" id="file" class="input_txt" name="file"  >
+
+							</td>
+						</tr>
+						<tr class='row_txt'>
+							<th>글 내용</th>
+							<td>
+								<textarea id="boardContents" name="boardContents" class="area_txt">[[${data.boardContents}]]</textarea>
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</form>
+			</section>
+			<div class="btn_area">
+				<button type="button" class="btn btn-primary"    onclick="goUpdate();">수정</button>
+				<button type="button" class="btn btn-secondary"  onclick="goList();">취소</button>
+			</div>
+		</div>
+	</div>
+	<script>
+
+		function validated() {
+			const title = $('#boardTitle');
+			const contents = $('#boardContents');
+
+			if($.trim( title.val() ).length === 0) {
+				alert('글 제목을 입력하십시오.');
+				title.focus();
+				return false;
+			}
+
+			if($.trim( contents.val() ).length === 0) {
+				alert('글 내용을 입력하십시오.');
+				contents.focus();
+				return false;
+			}
+
+			return true;
+
+		}
+
+		function goUpdate(){
+
+			if( validated()) {
+				const updateFrm = $('#updateFrm');
+				let isConfirm = true;
+				const fileObj = $('#file');
+				//파일 선택을 했을 경우만 경고창
+				if($.trim(fileObj.val()).length > 0) {
+					isConfirm = confirm('파일을 수정할 경우 기존파일이 삭제됩니다. \n 진행합니까?');
+				}
+				//파일이 없을 경우 , true 파일을 다시 수정할 경우 true
+				if (isConfirm){
+					updateFrm.submit();
+				}
+			}
+		}
+
+		function goList() {
+			const boardId = document.querySelector('#boardId').value;
+			const nowPage = document.querySelector('#nowPage').value;
+			location.href ="/notice/detail?nowPage=" + nowPage +"&boardId=" + boardId;
+		}
+
+	</script>
+</div>
+
+</html>

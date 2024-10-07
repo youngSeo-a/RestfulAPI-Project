@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+                layout:decorate="~{layout/main_layout}">
+
+<th:block layout:fragment="css">
+<style>
+  .content{
+    margin-top : 60px;
+    height:550px;
+  }
+  
+  .main{
+     border-top: 1px solid rgb(98,98,98);
+     margin-top : 30px;
+     padding : 30px;
+     border-radius: 5px;
+  }
+  
+  .d-table{
+  	 border : 1px solid;
+  	 border-collapse: collapse;
+  	 width: 100%;
+  	 height: 350px;
+  }
+  
+  .d-table th, td {
+     border : 1px solid;
+  }
+  
+  .d-table th {
+   	   background-color: #eeffe1;
+  }
+  
+  .tr_row{
+     height :10%;
+  }
+  
+  
+  .btn_area{
+     width: 100%;
+     height : 40px;
+     line-height: 40px;
+     text-align : right;
+     padding-right: 30px;
+  }
+  
+</style>
+</th:block>
+<div layout:fragment="content">
+ <div class="container">
+ 	<div class="content">
+ 	    <div style="text-align:center">
+ 	      <h3>게시글 보기</h3>
+ 	    </div>
+ 	    <section class="main">
+ 	       <input type="hidden" id="boardId" name="boardId" th:value="${data.boardId}">
+ 	       <input type="hidden" id="nowPage" name="nowPage" th:value="${nowPage}">
+ 	       <table class="d-table">
+ 	            <colgroup>
+ 	               <col width="20%" />
+ 	               <col width="80%" />
+ 	            </colgroup>
+ 	            <tbody>
+ 	               <tr class='tr_row'>
+ 	                   <th>글 제목</th>
+ 	                   <td>
+ 	                     <span th:text="${data.boardTitle}"></span>
+ 	                   </td>
+ 	               </tr>
+ 	               <tr class='tr_row'>
+ 	                   <th>글 쓴이</th>
+ 	                   <td>
+ 	                    <span th:text="${data.boardWriter}"></span>
+ 	                   </td>
+ 	               </tr>
+ 	               <tr class='tr_row'>
+ 	                   <th>조회 수</th>
+ 	                   <td>
+ 	                   <span th:text="${data.boardCount}"></span>
+ 	                   </td>
+ 	               </tr>
+				   <tr class='tr_row'>
+					   <th>첨부파일</th>
+					   <td th:if="${data.fileOriginName.length > 0}">
+						   <a href="javascript:void(0);" th:onclick="downloadFile([[${data.boardId}]]);">
+							   <span>[[ ${data.fileOriginName} ]]</span>
+						   </a>
+					   </td>
+					   <td th:if="${data.fileOriginName.length == 0}">
+							   <span>없음</span>
+					   </td>
+				   </tr>
+ 	               <tr class='row_txt'>
+ 	                   <th>글 내용</th>
+ 	                   <td>
+ 	                      <div th:utext="${data.boardContents}"></div>
+ 	                   </td>
+ 	               </tr>
+ 	            </tbody>
+ 	       </table>
+ 	    </section>
+ 	    <div class="btn_area" th:if="${session.userInfo !=null}">
+ 	        <button type="button" class="btn btn-primary"  onclick="goUpdate();">수정하기</button>
+ 	        <button type="button" class="btn btn-danger"   onclick="goDelete();">삭제하기</button>
+ 	        <button type="button" class="btn btn-secondary"   onclick="goList();">목록가기</button>
+ 	    </div>
+ 	    <div class="btn_area" th:if="${session.userInfo == null}">
+ 	        <button type="button" class="btn btn-secondary"   onclick="goList();">목록가기</button>
+ 	    </div>
+ 	</div>
+ </div>
+ <script>
+ 
+     function goList() {
+    	 const nowPage = document.querySelector('#nowPage').value;
+    	 location.href = '/notice/list?nowPage=' + nowPage;
+     }
+     
+     function goDelete (){
+    	 const isConfirm = confirm('정말 삭제하시겠습니까?');
+    	 
+    	 if(isConfirm) {
+    		 
+    		 console.log($('#boardId').val());
+    		 
+    		 //ajax 코드 
+    		 $.ajax({
+    			 url :'/api/v1/notice/' + $('#boardId').val(),
+    			 type :'delete',
+    			 dataType : 'json',
+    			 data : null
+    		 }).done(function(response){
+    			 if(response.resultCode === 200){
+    				 alert('게시글이 삭제되었습니다.');
+    				 location.href ="/notice/list";
+    			 }else {
+    				 alert('게시글 삭제가 실패하였습니다. 잠시후 다시해보세요..');
+    				 return false;
+    			 }
+    		 }).fail(function(xhr, status, error){
+    			 console.log(error);
+    		 });
+    	 }
+     }
+     
+     function goUpdate(){
+    	 const boardId =  $('#boardId').val();
+    	 const nowPage =  $('#nowPage').val()
+    	 
+    	 location.href ="/notice/detail/update?boardId=" +boardId +"&nowPage="+ nowPage; 
+     }
+
+	 function downloadFile(boardId){
+		 location.href ='/api/v1/file/' + boardId +'/B';
+	 }
+ </script>
+ 
+</div>
+
+</html>

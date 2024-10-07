@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+                layout:decorate="~{layout/main_layout}">
+
+<th:block layout:fragment="css">
+  <style> 
+     .content{
+         margin-top: 50px;
+         width: 80%;
+         height: 650px;
+      }
+      .btn-area {
+          text-align: right;
+          margin-bottom: 10px;
+          margin-right: 5px;
+       }
+    </style>
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 content">
+                <div class="btn-area">
+                    <button type="button" th:if="${session.userInfo !=null}"
+                     class="btn btn-primary" onclick="writeNotice();">글쓰기</button>
+                </div>
+                <div class='table-responsive'>
+                    <table class="table">
+                        <colgroup>
+                            <col width="10%"/>
+                            <col width="45%"/>
+                            <col width="15%"/>
+                            <col width="10%"/>
+                            <col width="20%"/>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                               <th>번호</th>
+                               <th>제목</th>
+                               <th>글쓴이</th>
+                               <th>조회수</th>
+                               <th>수정날짜</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+	                          <tr th:each=" vo : ${data.boardList}">
+	                            <td>[[ ${vo.boardId}]]</td>
+	                            <td>
+	                              <a href="javascript:void(0);" th:onclick="goDetail([[ ${vo.boardId}]]);">
+	                                  [[${vo.boardTitle}]]
+	                              </a>
+	                            </td>
+	                            <td>[[ ${vo.boardWriter}]]</td>
+	                            <td>[[ ${vo.boardCount}]]</td>
+	                            <td>[[ ${vo.updateDate}]]</td>
+	                          </tr>
+                        </tbody>
+                    </table>
+                    <input type="hidden" id="nowPage" name="nowPage" th:value="${data.pageNum}">
+                </div>
+            </div>
+            <div>
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination" th:utext="${data.pageHTML}">
+                    </ul>
+                  </nav>
+            </div>
+        </div>
+    </div>
+    <script>
+    
+       function movePage(pageNum) {
+    	   //선택한 페이지번호를 가지고 화면을 다시 그립니다.
+    	   location.href ="/notice/list?nowPage=" +  pageNum;
+       }
+       
+       function goDetail(boardId) {
+    	   const nowPage = document.querySelector('#nowPage').value;
+    	   location.href ="/notice/detail?nowPage=" + nowPage +"&boardId=" + boardId;  
+       }
+       
+       function writeNotice() {
+    	   location.href ="/notice/new";
+       }
+    
+    
+    </script>
+</div>
+</html>

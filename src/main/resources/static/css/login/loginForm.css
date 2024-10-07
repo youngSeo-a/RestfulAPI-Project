@@ -1,0 +1,81 @@
+@charset "UTF-8";
+body{
+    margin :0;
+    padding: 0;
+    background-color: #545353;
+}
+
+.loginArea {
+    display: flex;
+    flex-direction: row;
+    justify-content:  center;
+    align-items: center;
+    height: 100vh;
+}
+
+.loginForm{
+    border-radius: 15px;
+    border: 3px solid #ffffff;
+    width: 450px;
+    height: 350px;
+    box-shadow: 0 1px 3px 1px #525252,
+    0 1px 5px 1px #ffffff,
+    1px 1px 5px 1px #ffffff,
+    1px 2px 11px 5px #d9cfd9;
+}
+.content{
+    list-style-type: none;
+    margin: 20px 0;
+    padding: 0;
+
+
+}
+.login_tit{
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+}
+
+.id_area{
+    margin: 15% auto 20px;
+    width: 90%;
+}
+
+.passwd_area{
+    margin: 0 auto 30px;
+    width: 90%;
+}
+
+.btn_area{
+    margin: 0 auto 20px;
+    width: 95%;
+}
+
+.login_btn{
+    width: 100%;
+    color: white;
+    border-radius: 10px;
+    background-color: #7c52a6;
+    height: 40px;
+    line-height: 40px;
+}
+
+.id_txt{
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ada9a9;
+    height: 40px;
+    line-height: 40px;
+    background-color: #ada9a9;
+    box-shadow:   0 -1px 2px 1px #ffffff,
+    0  1px 2px 1px #ffffff;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.id_txt::placeholder{
+    color: white;
+    font-weight: bold;
+}
